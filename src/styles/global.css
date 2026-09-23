@@ -6584,3 +6584,11 @@ button {
   color: #7b8783;
   font-size: 13px;
 }
+
+
+.error-message{
+    background: #ffe7e7;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 13px;
+}
