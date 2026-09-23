@@ -1,0 +1,301 @@
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+  .main-shell {
+    margin-left: 0;
+    width: 100%;
+  }
+  .topbar {
+    height: 64px;
+    padding: 0 16px;
+    justify-content: space-between;
+  }
+  .mobile-logo {
+    display: flex;
+  }
+  .mobile-logo b {
+    font-size: 23px;
+  }
+  .mobile-logo .logo-mark {
+    width: 32px;
+    height: 32px;
+    font-size: 19px;
+  }
+  .page-wrap {
+    padding: 24px 16px 88px;
+  }
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+ 
+  .balance-card {
+    flex-direction: column;
+  }
+  .balance-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .action-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .group-grid {
+    grid-template-columns: 1fr;
+  }
+  .quick-links {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: rgba(255, 255, 255, 0.96);
+    border-top: 1px solid var(--border);
+    z-index: 20;
+    justify-content: space-around;
+    padding: 7px 8px;
+  }
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 55px;
+  }
+  .bottom-nav a.active {
+    color: var(--primary);
+  }
+  .bottom-nav .fab-link {
+    width: 55px;
+    height: 55px;
+    margin-top: -17px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 7px 18px rgba(0, 105, 92, 0.25);
+  }
+  .bottom-nav .fab-link span {
+    display: none;
+  }
+  .landing-nav {
+    padding: 16px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 55px 20px 70px;
+  }
+  .hero h1 {
+    font-size: 51px;
+    letter-spacing: -3px;
+  }
+  .hero-card {
+    transform: none;
+  }
+  .feature-strip {
+    grid-template-columns: 1fr 1fr;
+    padding: 0 20px 40px;
+  }
+  .landing-nav .btn {
+    display: none;
+  }
+  .narrow-page {
+    max-width: none;
+  }
+  .payment-panel {
+    bottom: 74px;
+  }
+}
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .add-expense-page {
+    max-width: 430px;
+  }
+
+  .add-expense-header {
+    margin-bottom: 18px;
+  }
+
+  .add-expense-header h1 {
+    font-size: 14px;
+  }
+
+  .expense-input-modes {
+    margin-bottom: 20px;
+  }
+
+  .expense-input-modes button {
+    height: 38px;
+    font-size: 11px;
+  }
+
+  .expense-description-section > label {
+    font-size: 13px;
+  }
+
+  .expense-description-section textarea {
+    min-height: 90px;
+    font-size: 13px;
+  }
+
+  .expense-understood {
+    padding: 12px;
+  }
+
+  .understood-row {
+    min-height: 34px;
+  }
+
+  .understood-label,
+  .understood-row strong {
+    font-size: 12px;
+  }
+
+  .expense-confirm-buttons {
+    gap: 8px;
+  }
+
+  .expense-add-button,
+  .expense-edit-button {
+    height: 43px;
+    font-size: 12px;
+  }
+}
+
+
+
+
+
+
+/* =========================================
+   MOBILE SIDEBAR
+========================================= */
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+
+  .app-main {
+    margin-left: 0;
+  }
+
+  .app-content {
+    padding: 18px 14px 80px;
+  }
+
+
+  /* Topbar */
+
+  .topbar {
+    height: 64px;
+
+    padding: 0 12px;
+
+    position: sticky;
+  }
+
+  .mobile-menu-button {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    background: #f1f8f6;
+  }
+
+
+  /* Sidebar */
+
+  .sidebar {
+    width: 285px;
+    display: block;
+
+    transform: translateX(-100%);
+
+    transition:
+      transform 0.25s ease;
+
+    box-shadow:
+      10px 0 35px rgba(0, 60, 55, 0.12);
+
+    z-index: 200;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+
+  /* Close */
+
+  .sidebar-close {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #f1f8f6;
+
+    color: #34545a;
+
+    cursor: pointer;
+  }
+
+
+  /* Overlay */
+
+  .sidebar-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: block;
+
+    background: rgba(4, 31, 35, 0.35);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+      opacity 0.25s ease,
+      visibility 0.25s ease;
+
+    z-index: 150;
+  }
+
+  .sidebar-overlay.show {
+    opacity: 1;
+
+    visibility: visible;
+  }
+
+}

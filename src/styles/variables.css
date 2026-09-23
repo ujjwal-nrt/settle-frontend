@@ -1,0 +1,15 @@
+:root {
+  --primary: #00695c;
+  --primary-dark: #004d40;
+  --primary-light: #e0f2f1;
+  --mint: #e8f6f1;
+  --bg: #f6fbf9;
+  --surface: #fff;
+  --text: #102a2a;
+  --muted: #6a7b79;
+  --border: #dce9e5;
+  --danger: #c94a4a;
+  --shadow: 0 12px 35px rgba(0, 77, 64, 0.08);
+  --radius: 18px;
+  --navbar-height: 65px;
+}
