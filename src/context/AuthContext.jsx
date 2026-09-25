@@ -5,9 +5,7 @@ import { loginUser, registerUser, getCurrentUser } from "../api/authApi";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // =========================================
   // USER STATE
-  // =========================================
 
   const [userState, setUserState] = useState(() => {
     try {
@@ -17,23 +15,16 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // =========================================
   // TOKEN STATE
-  // =========================================
 
   const [token, setToken] = useState(() => {
     return localStorage.getItem("settle_token") || null;
   });
 
-  // =========================================
   // LOADING
-  // =========================================
-
   const [loading, setLoading] = useState(false);
 
-  // =========================================
   // SET USER
-  // =========================================
 
   const setUser = (value) => {
     setUserState((currentUser) => {
@@ -49,9 +40,7 @@ export function AuthProvider({ children }) {
     });
   };
 
-  // =========================================
   // LOAD CURRENT USER
-  // =========================================
 
   useEffect(() => {
     const loadCurrentUser = async () => {
@@ -85,9 +74,7 @@ export function AuthProvider({ children }) {
     loadCurrentUser();
   }, [token]);
 
-  // =========================================
   // LOGIN
-  // =========================================
 
   const login = async (email, password) => {
     setLoading(true);
@@ -112,9 +99,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // =========================================
   // REGISTER
-  // =========================================
 
   const register = async (name, phone, email, password) => {
     setLoading(true);
@@ -141,9 +126,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // =========================================
   // LOGOUT
-  // =========================================
 
   const logout = () => {
     setUserState(null);
@@ -153,9 +136,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("settle_user");
   };
 
-  // =========================================
   // CONTEXT
-  // =========================================
 
   return (
     <AuthContext.Provider

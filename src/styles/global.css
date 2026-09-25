@@ -3351,10 +3351,12 @@ button {
 ========================================= */
 .landing-footer {
   position: fixed;
-  width: 100%;
+  width: 430px;
+  max-width: 100%;
   bottom: 20px;
   z-index: 999;
 }
+
 .landing-illustration {
   position: relative;
 

@@ -4,8 +4,6 @@ import { ArrowRight, Plane, UsersRound, House, BarChart3 } from "lucide-react";
 export default function Landing() {
   return (
     <div className="landing-page">
-
-
       {/* Skip */}
       <Link to="/login" className="skip-button">
         Skip
@@ -13,7 +11,6 @@ export default function Landing() {
 
       {/* Main content */}
       <main className="landing-content">
-
         {/* Logo */}
         <div className="landing-logo">
           <div className="landing-logo-mark">
@@ -21,7 +18,9 @@ export default function Landing() {
             <span></span>
           </div>
 
-          <span className="app-name">Settle<span>G</span></span>
+          <span className="app-name">
+            Settle<span>G</span>
+          </span>
         </div>
 
         {/* Heading */}
@@ -41,19 +40,13 @@ export default function Landing() {
 
         {/* Illustration */}
         <div className="landing-illustration">
-
-
           <div className="people-image">
-            <img
-              src="/images/settle-friends.png"
-              alt="Friends using SettleG"
-            />
+            <img src="/images/settle-friends.png" alt="Friends using SettleG" />
           </div>
         </div>
 
         {/* Categories */}
         <div className="landing-categories">
-
           <div className="landing-category">
             <div className="category-icon travel">
               <Plane size={18} />
@@ -85,30 +78,23 @@ export default function Landing() {
 
             <span>Office</span>
           </div>
-
         </div>
 
         {/* CTA */}
         <div className="landing-footer">
-            <Link
-          to="/register"
-          className="landing-get-started"
-        >
-          <span>Get Started</span>
+          <Link to="/register" className="landing-get-started">
+            <span>Get Started</span>
 
-          <ArrowRight size={19} />
-        </Link>
-
-        {/* Login */}
-        <div className="landing-login">
-          <span>Already have an account?</span>
-
-          <Link to="/login">
-            Log in
+            <ArrowRight size={19} />
           </Link>
-        </div>
-        </div>
 
+          {/* Login */}
+          <div className="landing-login">
+            <span>Already have an account?</span>
+
+            <Link to="/login">Log in</Link>
+          </div>
+        </div>
       </main>
     </div>
   );
