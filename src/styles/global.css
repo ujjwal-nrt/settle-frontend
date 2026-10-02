@@ -838,7 +838,7 @@ button {
 .group-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 10px;
 }
 .group-card {
   display: flex;
@@ -6425,6 +6425,11 @@ button {
 .member-row:hover {
   background: #fafafa;
 }
+.member-status.admin {
+    background: var(--primary);
+    color: #fff;
+    justify-content: center;
+}
 
 /* =========================================
    MEMBER INFORMATION
@@ -9073,11 +9078,12 @@ button {
   flex-shrink: 0;
 }
 
-.expense-edited-by small {
+.expense-edited-by span {
   display: block;
   font-size: 11px;
   color: #d45555;
 }
+.expense-edited-by small{color: var(--muted);}
 
 /* -----------------------------------------
    Group name duplicate warning

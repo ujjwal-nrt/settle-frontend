@@ -1,24 +1,19 @@
-import { useMemo, useState } from "react";
-import { Check, FileText, Mic, Pencil, Plus, Search, Users, Percent, IndianRupee, Split, CircleDot } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, FileText, Mic, Pencil, Plus, Users, IndianRupee, Split, CircleDot } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { createExpense } from "../../api/expenseApi";
-
+import { createExpense, updateExpense } from "../../api/expenseApi";
 import SplitSelector from "./SplitSelector";
 import MemberSelector from "./MemberSelector";
-
 import { useAuth } from "../../hooks/useAuth";
-
 import { startSpeechRecognition } from "../../utils/speechRecognition";
-
 import { parseExpenseText } from "../../utils/expenseParser";
+import { calculateSplits } from "../../utils/splitCalculations";
 
-import { calculateSplits, validateSplit } from "../../utils/splitCalculations";
-
-export default function ExpenseForm({ group }) {
+export default function ExpenseForm({ group, initialExpense, mode = "create" }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const isEditMode = mode === "edit";
 
   const { user } = useAuth();
 
@@ -38,8 +33,63 @@ export default function ExpenseForm({ group }) {
   const [percentages, setPercentages] = useState({});
   const [shareUnits, setShareUnits] = useState({});
 
-  const createExpenseMutation = useMutation({
-    mutationFn: (expenseData) => createExpense(group.id, expenseData),
+  useEffect(() => {
+    if (!initialExpense || !isEditMode) return;
+
+    // Basic expense fields
+    setDescription(initialExpense.title || "");
+    setAmount(String(initialExpense.amount ?? ""));
+    setPaidBy(String(initialExpense.paid_by ?? ""));
+    setCategory(initialExpense.category || "Other");
+    setSplitType(initialExpense.split_type || "equal");
+
+    // Saved participants
+    const participants = Array.isArray(initialExpense.expense_participants) ? initialExpense.expense_participants : [];
+
+    const participantIds = participants.map((participant) => String(participant.user_id));
+
+    setSelected(participantIds);
+
+    // Restore split values
+    if (initialExpense.split_type === "exact") {
+      const values = {};
+
+      participants.forEach((participant) => {
+        values[String(participant.user_id)] = String(participant.share ?? "");
+      });
+
+      setExactAmounts(values);
+    }
+
+    if (initialExpense.split_type === "percentage") {
+      const values = {};
+
+      participants.forEach((participant) => {
+        values[String(participant.user_id)] = "";
+      });
+
+      setPercentages(values);
+    }
+
+    if (initialExpense.split_type === "shares") {
+      const values = {};
+
+      participants.forEach((participant) => {
+        values[String(participant.user_id)] = "";
+      });
+
+      setShareUnits(values);
+    }
+  }, [initialExpense, isEditMode]);
+
+  const expenseMutation = useMutation({
+    mutationFn: (expenseData) => {
+      if (isEditMode) {
+        return updateExpense(initialExpense.id, expenseData);
+      }
+
+      return createExpense(group.id, expenseData);
+    },
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -50,7 +100,24 @@ export default function ExpenseForm({ group }) {
         queryKey: ["groups"],
       });
 
+      if (isEditMode) {
+        sessionStorage.setItem(
+          "expense_updated_toast",
+          JSON.stringify({
+            type: "success",
+            message: "Expense updated successfully",
+          }),
+        );
+
+        navigate(`/app/groups/${group.id}/expense/${initialExpense.id}`);
+        return;
+      }
+
       navigate(`/app/groups/${group.id}`);
+    },
+
+    onError: (error) => {
+      console.error("EXPENSE SAVE ERROR:", error);
     },
   });
 
@@ -280,7 +347,7 @@ export default function ExpenseForm({ group }) {
 
     console.log("FINAL EXPENSE DATA:", JSON.stringify(expenseData, null, 2));
 
-    createExpenseMutation.mutate(expenseData);
+    expenseMutation.mutate(expenseData);
   };
 
   const paidByMember = useMemo(() => {
@@ -632,7 +699,8 @@ export default function ExpenseForm({ group }) {
         <div className="bill-input-box">
           <FileText size={30} />
 
-          <span>Upload or scan your bill</span>
+          {/* <span>Upload or scan your bill</span> */}
+          <span>Coming Soon...</span>
 
           <button type="button">Choose Bill</button>
         </div>
@@ -644,7 +712,9 @@ export default function ExpenseForm({ group }) {
 
           <div className="understood-row">
             <div className="understood-label">
-              <span className="understood-icon">₹</span>
+              <span className="understood-icon">
+                <IndianRupee size={12} />
+              </span>
 
               <span>Amount</span>
             </div>
@@ -654,7 +724,9 @@ export default function ExpenseForm({ group }) {
 
           <div className="understood-row">
             <div className="understood-label">
-              <span className="understood-icon"><IndianRupee size={12} /></span>
+              <span className="understood-icon">
+                <IndianRupee size={12} />
+              </span>
 
               <span>Paid by</span>
             </div>
@@ -664,7 +736,9 @@ export default function ExpenseForm({ group }) {
 
           <div className="understood-row">
             <div className="understood-label">
-              <span className="understood-icon"><CircleDot size={12} /></span>
+              <span className="understood-icon">
+                <CircleDot size={12} />
+              </span>
 
               <span>Category</span>
             </div>
@@ -674,7 +748,9 @@ export default function ExpenseForm({ group }) {
 
           <div className="understood-row">
             <div className="understood-label">
-              <span className="understood-icon"><Split size={12} /></span>
+              <span className="understood-icon">
+                <Split size={12} />
+              </span>
 
               <span>Split</span>
             </div>
@@ -692,7 +768,9 @@ export default function ExpenseForm({ group }) {
 
           <div className="understood-row">
             <div className="understood-label">
-              <span className="understood-icon"><Users size={12}/> </span>
+              <span className="understood-icon">
+                <Users size={12} />{" "}
+              </span>
 
               <span>Split between</span>
             </div>
@@ -745,8 +823,8 @@ export default function ExpenseForm({ group }) {
         </div>
       )}
 
-      {createExpenseMutation.isError && (
-        <div className="form-error">{createExpenseMutation.error?.message || "Failed to add expense."}</div>
+      {expenseMutation.isError && (
+        <div className="form-error">{expenseMutation.error?.message || "Failed to add expense."}</div>
       )}
 
       <div className="expense-confirmation">
@@ -757,7 +835,7 @@ export default function ExpenseForm({ group }) {
             type="submit"
             className="expense-add-button"
             disabled={
-              createExpenseMutation.isPending ||
+              expenseMutation.isPending ||
               Number(amount) <= 0 ||
               !paidBy ||
               selectedMembers.length === 0 ||
@@ -767,13 +845,13 @@ export default function ExpenseForm({ group }) {
           >
             <Check size={18} />
 
-            {createExpenseMutation.isPending ? "Adding..." : "Yes, Add"}
+            {expenseMutation.isPending ? "Adding..." : "Yes, Add"}
           </button>
 
           <button
             type="button"
             className="expense-edit-button"
-            disabled={createExpenseMutation.isPending}
+            disabled={expenseMutation.isPending}
             onClick={() => setInputMode("text")}
           >
             <Pencil size={16} />

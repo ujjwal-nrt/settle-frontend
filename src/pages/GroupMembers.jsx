@@ -71,7 +71,7 @@ export default function GroupMembers() {
         .filter(Boolean)
         .map((phone) => String(phone).replace(/\D/g, "")),
     );
-
+    
     setPendingInvites((current) =>
       current.filter((invite) => {
         const phone = String(invite.phone || "").replace(/\D/g, "");
@@ -182,25 +182,19 @@ export default function GroupMembers() {
         phone: contact.phone,
       });
 
-
       // REGISTERED USER
 
       if (result?.type === "member") {
-
-        // Already an active member
         if (result?.alreadyMember) {
-          showToast("error", `${contact.name || "This person"} is already a member of this group.`);
-
+          // showToast("error", `${contact.name || "This person"} is already a member of this group.`);
           return result;
         }
 
-        // Member was previously removed/left and is now active again
-        if (result?.reactivated) {
-          showToast("success", `${contact.name || "Member"} added back to the group.`);
-        } else {
-          // Completely new member
-          showToast("success", `${contact.name || "Member"} added successfully.`);
-        }
+        // if (result?.reactivated) {
+        //   showToast("success", `${contact.name || "Member"} added back to the group.`);
+        // } else {
+        //   showToast("success", `${contact.name || "Member"} added successfully.`);
+        // }
 
         await queryClient.invalidateQueries({
           queryKey: ["group", groupId],
@@ -237,7 +231,7 @@ export default function GroupMembers() {
         await queryClient.invalidateQueries({
           queryKey: ["group", groupId],
         });
- 
+
         return result;
       }
     } catch (error) {
@@ -494,7 +488,9 @@ export default function GroupMembers() {
               </div>
 
               <div className="member-row-action">
-                {isOwner && String(member.id) !== String(user?.id) ? (
+                {String(member.id) === String(group.created_by) ? (
+                  <div className="member-status registered admin">Admin</div>
+                ) : isOwner && String(member.id) !== String(user?.id) ? (
                   <button
                     type="button"
                     className="remove-member-button"

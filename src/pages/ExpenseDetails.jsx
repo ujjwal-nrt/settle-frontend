@@ -100,33 +100,20 @@ export default function ExpenseDetails() {
     },
   });
 
-  // =========================================
-  // LOADING
-  // =========================================
 
   if (isLoading) {
     return <div className="empty-state">Loading expense...</div>;
   }
 
-  // =========================================
-  // ERROR
-  // =========================================
 
   if (error) {
     return <div className="empty-state">Failed to load group.</div>;
   }
 
-  // =========================================
-  // GROUP NOT FOUND
-  // =========================================
-
   if (!group) {
     return <div className="empty-state">Group not found.</div>;
   }
 
-  // =========================================
-  // FIND EXPENSE
-  // =========================================
 
   const expense = group.expenses?.find((item) => String(item.id) === String(expenseId));
 
@@ -136,15 +123,7 @@ export default function ExpenseDetails() {
 
   const members = group.members || [];
 
-  // =========================================
-  // PAYER
-  // =========================================
-
   const payer = members.find((member) => String(member.id) === String(expense.paid_by));
-
-  // =========================================
-  // PARTICIPANTS + SHARES
-  // =========================================
 
   const participants = Array.isArray(expense.expense_participants)
     ? expense.expense_participants
@@ -164,10 +143,7 @@ export default function ExpenseDetails() {
     : [];
 
   return (
-    <div className="narrow-page">
-      {/* =========================================
-          HEADER
-      ========================================= */}
+    <div className="narrow-page"> 
 
       <div className="back-row expense-detail-header">
         <Link to={`/app/groups/${group.id}`}>

@@ -13,9 +13,7 @@ export function GroupProvider({ children }) {
 
   const { isAuthenticated } = useAuth();
 
-  // =========================================
   // GET GROUPS
-  // =========================================
 
   const {
     data: groupsData,
@@ -36,15 +34,13 @@ export function GroupProvider({ children }) {
 
   const groups = groupsData?.groups || [];
 
-  // =========================================
   // CREATE GROUP
-  // =========================================
 
   const createGroupMutation = useMutation({
     mutationFn: createGroup,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["groups"],
       });
     },
