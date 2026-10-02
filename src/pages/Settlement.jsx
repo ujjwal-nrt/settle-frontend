@@ -3,51 +3,55 @@ import { ArrowLeft, ArrowDownLeft, ArrowUpRight, Sparkles } from "lucide-react";
 
 import PaymentButton from "../components/settlement/PaymentButton";
 
-import { useGroups } from "../context/GroupContext";
 import { useAuth } from "../hooks/useAuth";
 
 import { groupBalances } from "../utils/calculations";
 import { optimizeSettlements } from "../utils/settlement";
 import { formatCurrency } from "../utils/currency";
+import useGroup from "../hooks/useGroup";
 
 export default function Settlement() {
   const { groupId } = useParams();
 
   const { user } = useAuth();
 
-  const { groups, groupsLoading, groupsError } = useGroups();
+  const { data, isLoading: groupLoading, isError: groupError, error } = useGroup(groupId);
+
+  const group = data?.group || data;
 
   // =========================================
   // LOADING
   // =========================================
 
-  if (groupsLoading) {
-    return (
-      <div className="empty-state">
-        <h3>Loading settlement...</h3>
-        <p>Please wait while we calculate the balances.</p>
-      </div>
-    );
-  }
+if (groupLoading) {
+  return (
+    <div className="empty-state">
+      <h3>Loading settlement...</h3>
+      <p>Please wait while we calculate the balances.</p>
+    </div>
+  );
+}
 
   // =========================================
   // ERROR
   // =========================================
 
-  if (groupsError) {
-    return (
-      <div className="empty-state">
-        <h3>Failed to load groups.</h3>
-        <p>{groupsError?.message || "Something went wrong while loading the group."}</p>
-      </div>
-    );
-  }
+if (groupError) {
+  return (
+    <div className="empty-state">
+      <h3>Failed to load group.</h3>
+      <p>
+        {error?.message ||
+          "Something went wrong while loading the group."}
+      </p>
+    </div>
+  );
+}
 
   // =========================================
   // FIND GROUP
   // =========================================
 
-  const group = groups?.find((item) => String(item.id) === String(groupId));
 
   if (!group) {
     return (
@@ -69,11 +73,21 @@ export default function Settlement() {
   // OPTIMIZE SETTLEMENTS
   // =========================================
 
-  const items = optimizeSettlements(balances, group.members || []);
+  const settlementMembers = [
+    ...(group.members || []),
 
-  console.log("SETTLEMENT GROUP:", group);
-  console.log("SETTLEMENT BALANCES:", balances);
-  console.log("SETTLEMENT ITEMS:", items);
+    ...(group.expenses || []).flatMap((expense) => [
+      expense.users,
+
+      ...(expense.expense_participants || []).map((participant) => participant.user),
+    ]),
+  ];
+
+  const uniqueSettlementMembers = Array.from(
+    new Map(settlementMembers.filter(Boolean).map((member) => [String(member.id), member])).values(),
+  );
+
+  const items = optimizeSettlements(balances, uniqueSettlementMembers);
 
   // =========================================
   // MY SETTLEMENTS
@@ -285,15 +299,15 @@ export default function Settlement() {
           GROUP SUMMARY
       ===================================== */}
 
-      {items.length > 0 && (
+      {/* {items.length > 0 && (
         <div className="settlement-footer-summary">
           <span>Total transfers</span>
 
           <strong>{items.length}</strong>
 
-          <small>These are the minimum transfers needed to settleG the group.</small>
+          <small>These are the minimum transfers needed to settle the group.</small>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Check, Copy, Lock, Smartphone } from "lucide-react";
 
-import { useGroups } from "../context/GroupContext";
+import useGroup from "../hooks/useGroup";
 import { useAuth } from "../hooks/useAuth";
 
 import { groupBalances } from "../utils/calculations";
@@ -14,7 +14,17 @@ export default function Payment() {
 
   const { user } = useAuth();
 
-  const { groups, groupsLoading, groupsError } = useGroups();
+  // =========================================
+  // LOAD FULL GROUP
+  // =========================================
+
+  const { data, isLoading: groupLoading, isError: groupError, error } = useGroup(groupId);
+
+  const group = data?.group || data;
+
+  // =========================================
+  // LOCAL STATE
+  // =========================================
 
   const [copied, setCopied] = useState(false);
   const [paid, setPaid] = useState(false);
@@ -24,7 +34,7 @@ export default function Payment() {
   // LOADING
   // =========================================
 
-  if (groupsLoading) {
+  if (groupLoading) {
     return <div className="empty-state">Loading payment...</div>;
   }
 
@@ -32,15 +42,19 @@ export default function Payment() {
   // ERROR
   // =========================================
 
-  if (groupsError) {
-    return <div className="empty-state">Failed to load payment details.</div>;
+  if (groupError) {
+    return (
+      <div className="empty-state">
+        <h3>Failed to load payment details.</h3>
+
+        <p>{error?.message || "Something went wrong while loading the group."}</p>
+      </div>
+    );
   }
 
   // =========================================
-  // FIND GROUP
+  // GROUP NOT FOUND
   // =========================================
-
-  const group = groups?.find((item) => String(item.id) === String(groupId));
 
   if (!group) {
     return (
@@ -55,16 +69,61 @@ export default function Payment() {
   }
 
   // =========================================
-  // CALCULATE CURRENT SETTLEMENTS
+  // CALCULATE CURRENT BALANCES
   // =========================================
 
   const balances = groupBalances(group);
 
-  const settlements = optimizeSettlements(balances, group.members || []);
+  // =========================================
+  // BUILD SETTLEMENT MEMBERS
+  // =========================================
+  //
+  // group.members contains only ACTIVE members.
+  //
+  // If a member was removed/left the group but had
+  // historical expenses, they may no longer exist
+  // inside group.members.
+  //
+  // Therefore also collect users from:
+  //
+  // 1. Expense payer
+  // 2. Expense participants
+  //
+  // This prevents "Unknown member" in settlements.
+  // =========================================
 
-  console.log("PAYMENT GROUP:", group);
-  console.log("PAYMENT BALANCES:", balances);
-  console.log("PAYMENT SETTLEMENTS:", settlements);
+  const settlementMembers = [
+    // Current active members
+    ...(group.members || []),
+
+    // Historical users from expenses
+    ...(group.expenses || []).flatMap((expense) => [
+      // Person who paid
+      expense.users,
+
+      // People who participated
+      ...(expense.expense_participants || []).map((participant) => participant.user || participant.users),
+    ]),
+  ];
+
+  // =========================================
+  // REMOVE DUPLICATE USERS
+  // =========================================
+
+  const uniqueSettlementMembers = Array.from(
+    new Map(
+      settlementMembers
+        .filter(Boolean)
+        .filter((member) => member.id)
+        .map((member) => [String(member.id), member]),
+    ).values(),
+  );
+
+  // =========================================
+  // CALCULATE SETTLEMENTS
+  // =========================================
+
+  const settlements = optimizeSettlements(balances, uniqueSettlementMembers);
 
   // =========================================
   // FIND PAYMENT
@@ -76,6 +135,7 @@ export default function Payment() {
     return (
       <div className="empty-state">
         <h3>Payment not found</h3>
+
         <p>This payment may already be settled.</p>
 
         <button type="button" onClick={() => navigate(`/app/groups/${group.id}/settlement`)}>
@@ -114,10 +174,9 @@ export default function Payment() {
 
   const isCurrentUserReceiver = currentUserId && receiverId === currentUserId;
 
-  /*
-   * This payment screen should only be used
-   * when the logged-in user is the payer.
-   */
+  // =========================================
+  // ONLY PAYER CAN USE PAYMENT SCREEN
+  // =========================================
 
   if (!isCurrentUserPayer) {
     return (
@@ -143,21 +202,8 @@ export default function Payment() {
   // UPI
   // =========================================
 
-  /*
-   * Do not use a fake/hardcoded UPI ID.
-   *
-   * This assumes your user object contains:
-   *
-   * upiId
-   *
-   * or:
-   *
-   * upi_id
-   *
-   * Add that field to your backend response if needed.
-   */
-
   const upiId = toMember?.upi_id?.trim() || "";
+
   const hasUpiId = Boolean(upiId);
 
   // =========================================
@@ -198,14 +244,13 @@ export default function Payment() {
     /*
      * Temporary local UI behaviour.
      *
-     * IMPORTANT:
      * This does NOT update the database.
      *
-     * For a real settlement flow you should call:
+     * For a real settlement flow:
      *
      * POST /api/groups/:groupId/settlements/:paymentId
      *
-     * and update the group cache on success.
+     * Then invalidate the relevant React Query caches.
      */
 
     setPaid(true);
@@ -337,10 +382,6 @@ export default function Payment() {
       {/* =====================================
           UPI
       ===================================== */}
-
-      {/* =====================================
-    UPI
-===================================== */}
 
       <div className={`upi-card ${!hasUpiId ? "upi-card-empty" : ""}`}>
         <div>

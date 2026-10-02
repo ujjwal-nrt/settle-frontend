@@ -1,26 +1,32 @@
 import Avatar from "../common/Avatar";
 import { formatCurrency } from "../../utils/currency";
-import { useGroups } from "../../context/GroupContext";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { getAllActivity, getRecentActivity } from "../../api/groupApi";
 
-export default function RecentActivity() {
-  const { groups, groupsLoading } = useGroups();
+export default function RecentActivity({ showHeader = true }) {
+  const isDashboard = showHeader;
 
-  const all = groups
-    .flatMap((group) =>
-      (group.expenses || []).map((expense) => ({
-        ...expense,
-        group,
-      })),
-    )
-    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
-    .slice(0, 5);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: isDashboard ? ["recentActivity"] : ["activity"],
 
-  if (groupsLoading) {
+    queryFn: isDashboard ? getRecentActivity : getAllActivity,
+
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const activities = data?.activities || [];
+
+  if (isLoading) {
     return (
       <section>
-        <div className="section-title">
-          <h2>Recent activity</h2>
-        </div>
+        {showHeader && (
+          <div className="section-title">
+            <h2>Recent Activity</h2>
+          </div>
+        )}
 
         <div className="list-card">
           <div className="empty-state">Loading activity...</div>
@@ -29,22 +35,40 @@ export default function RecentActivity() {
     );
   }
 
+  if (isError) {
+    return (
+      <section>
+        {showHeader && (
+          <div className="section-title">
+            <h2>Recent Activity</h2>
+          </div>
+        )}
+
+        <div className="list-card">
+          <div className="empty-state">Unable to load activity.</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section>
-        {/* <div className="section-title">
-          <h2>Recent activity</h2>
-        </div> */}
+      {showHeader && (
+        <div className="section-title">
+          <h2>Recent Activity</h2>
 
-      <div className="list-card">
-        {all.length === 0 ? (
+          <Link to="/app/activity">See all</Link>
+        </div>
+      )}
+
+      <div className="list-card recent-activity">
+        {activities.length === 0 ? (
           <div className="empty-state">
             <p>No recent activity.</p>
           </div>
         ) : (
-          all.map((expense) => {
-            const members = expense.group.members || [];
-
-            const paidBy = members.find((member) => member.id === expense.paid_by) || null;
+          activities.map((expense) => {
+            const paidBy = expense.users || null;
 
             const expenseDate = expense.created_at
               ? new Date(expense.created_at).toLocaleDateString("en-IN", {
@@ -59,10 +83,11 @@ export default function RecentActivity() {
                 <Avatar src={paidBy?.avatar} name={paidBy?.name || "User"} />
 
                 <div className="row-main">
-                  <b>{expense.title}</b>
+                  <b className={showHeader ? "hidden-title" : ""}>{expense.title}</b>
 
                   <span>
-                    {expense.group.name}
+                    {expense.groups?.name || "Unknown group"}
+
                     {expenseDate ? ` · ${expenseDate}` : ""}
                   </span>
                 </div>

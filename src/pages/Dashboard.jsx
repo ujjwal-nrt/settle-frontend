@@ -35,7 +35,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <BalanceCard groups={groups || []} currentUserId={user?.id} />
+      {/* <BalanceCard groups={groups || []} currentUserId={user?.id} /> */}
+      <BalanceCard />
 
       <ExpenseActions />
 

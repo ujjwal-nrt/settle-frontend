@@ -33,6 +33,7 @@ import GroupMembers from "./pages/GroupMembers";
 import { useQueryClient } from "@tanstack/react-query";
 import EditGroup from "./pages/EditGroup";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import EditExpense from "./pages/EditExpense";
 
 function Protected({ children }) {
   const { user } = useAuth();
@@ -159,6 +160,8 @@ export default function App() {
         <Route path="groups/:groupId/expense/add" element={<AddExpense />} />
 
         <Route path="groups/:groupId/expense/:expenseId" element={<ExpenseDetails />} />
+
+        <Route path="/app/groups/:groupId/expense/:expenseId/edit" element={<EditExpense />} />
 
         <Route path="groups/:groupId/settlement" element={<Settlement />} />
 

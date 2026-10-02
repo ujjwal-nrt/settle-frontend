@@ -3,14 +3,13 @@ import { ArrowRight, Plane, UsersRound, House, BarChart3 } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div className="landing-page">
-      {/* Skip */}
-      <Link to="/login" className="skip-button">
-        Skip
-      </Link>
+    <div className="landing-page"> 
 
       {/* Main content */}
       <main className="landing-content">
+      <Link to="/login" className="skip-button">
+        Skip
+      </Link>
         {/* Logo */}
         <div className="landing-logo">
           <div className="landing-logo-mark">

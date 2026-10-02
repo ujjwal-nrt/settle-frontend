@@ -8,6 +8,14 @@ export const getGroup = (groupId) => {
   return apiRequest(`/groups/${groupId}`);
 };
 
+export const getRecentActivity = () => {
+  return apiRequest("/groups/activity/recent");
+};
+
+export const getAllActivity = () => {
+  return apiRequest("/groups/activity");
+};
+
 export const createGroup = (groupData) => {
   return apiRequest("/groups", {
     method: "POST",
@@ -59,3 +67,7 @@ export const deleteGroup = (groupId) =>
   apiRequest(`/groups/${groupId}`, {
     method: "DELETE",
   });
+
+export const checkGroupName = (name) => {
+  return apiRequest(`/groups/check-name?name=${encodeURIComponent(name)}`);
+};

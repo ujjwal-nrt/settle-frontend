@@ -1,8 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+
+import { useQueryClient } from "@tanstack/react-query";
+
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
+
 import { useAuth } from "../hooks/useAuth";
+
+import { getGroups, getRecentActivity } from "../api/groupApi";
+
 import { ArrowLeft } from "lucide-react";
 
 export default function Login() {
@@ -11,15 +18,29 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const { login, loading } = useAuth();
+  const queryClient = useQueryClient();
   const nav = useNavigate();
 
   const submit = async (e) => {
     e.preventDefault();
-
     setError("");
 
     try {
       await login(email, password);
+
+      await Promise.allSettled([
+        queryClient.query({
+          queryKey: ["groups"],
+          queryFn: getGroups,
+          staleTime: 5 * 60 * 1000,
+        }),
+
+        queryClient.query({
+          queryKey: ["recentActivity"],
+          queryFn: getRecentActivity,
+          staleTime: 2 * 60 * 1000,
+        }),
+      ]);
 
       nav("/app/dashboard");
     } catch (error) {
@@ -35,8 +56,13 @@ export default function Login() {
         </button>
 
         <Link className="auth-brand" to="/">
-          <span className="logo-mark"><img src="/assets/icon.jpg" alt="" /></span>
-          <span className="app-name">Settle<span>G</span></span>
+          <span className="logo-mark">
+            <img src="/assets/icon.jpg" alt="" />
+          </span>
+
+          <span className="app-name">
+            Settle<span>G</span>
+          </span>
         </Link>
 
         <h1>Welcome back</h1>

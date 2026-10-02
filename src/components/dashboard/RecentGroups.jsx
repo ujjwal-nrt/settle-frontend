@@ -35,6 +35,7 @@ export default function RecentGroups() {
         {groups.length === 0 ? (
           <div className="empty-state">
             <p>No groups yet.</p>
+
             <Button onClick={() => navigate("/app/groups/create")}>
               <Plus size={18} />
               Create your first group
@@ -42,10 +43,6 @@ export default function RecentGroups() {
           </div>
         ) : (
           groups.slice(0, 5).map((group) => {
-            const memberCount = group.members?.length || 0;
-
-            const totalSpent = group.expenses?.reduce((total, expense) => total + Number(expense.amount || 0), 0) || 0;
-
             return (
               <Link className="group-row" key={group.id} to={`/app/groups/${group.id}`}>
                 <div className="group-icon">{group.emoji || "👥"}</div>
@@ -53,10 +50,10 @@ export default function RecentGroups() {
                 <div className="row-main">
                   <b>{group.name}</b>
 
-                  <span>{memberCount > 0 ? `${memberCount} people` : "Group"}</span>
+                  <span>{group.member_count > 0 ? `${group.member_count} people` : "Group"}</span>
                 </div>
 
-                <strong>{formatCurrency(totalSpent)}</strong>
+                <strong>{formatCurrency(Number(group.total_spent || 0))}</strong>
 
                 <ChevronRight size={18} />
               </Link>

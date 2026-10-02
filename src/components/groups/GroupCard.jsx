@@ -1,11 +1,9 @@
 import { Link } from "react-router-dom";
+import { formatCurrency } from "../../utils/currency";
 
-export default function GroupCard({ group }) { 
-
-  const members = group?.members || [];
-  const expenses = group?.expenses || [];
-
-  const totalExpenses = expenses.reduce((total, expense) => total + Number(expense.amount || 0), 0);
+export default function GroupCard({ group }) {
+  const memberCount = Number(group?.member_count || 0);
+  const totalSpent = Number(group?.total_spent || 0);
 
   return (
     <Link to={`/app/groups/${group.id}`} className="group-card">
@@ -15,12 +13,14 @@ export default function GroupCard({ group }) {
         <div className="group-card-content">
           <h3>{group.name}</h3>
 
-          <span>{members.length} people</span>
+          <span>
+            {memberCount} {memberCount === 1 ? "person" : "people"}
+          </span>
         </div>
       </div>
 
       <div>
-        <strong>₹{totalExpenses.toLocaleString("en-IN")}</strong>
+        <strong>{formatCurrency(totalSpent)}</strong>
 
         <span className="group-card-arrow">›</span>
       </div>

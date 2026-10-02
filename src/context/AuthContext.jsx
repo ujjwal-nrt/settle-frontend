@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 import { loginUser, registerUser, getCurrentUser } from "../api/authApi";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   // USER STATE
+  const queryClient = useQueryClient();
 
   const [userState, setUserState] = useState(() => {
     try {
@@ -60,6 +62,10 @@ export function AuthProvider({ children }) {
         console.error("LOAD CURRENT USER ERROR:", error);
 
         if (error?.status === 401 || error?.response?.status === 401) {
+          queryClient.removeQueries({
+            queryKey: ["groups"],
+          });
+
           setUserState(null);
           setToken(null);
 
@@ -129,6 +135,8 @@ export function AuthProvider({ children }) {
   // LOGOUT
 
   const logout = () => {
+    queryClient.clear();
+
     setUserState(null);
     setToken(null);
 

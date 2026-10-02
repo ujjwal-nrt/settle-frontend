@@ -75,6 +75,24 @@ export default function GroupDetails() {
     }
   };
 
+  const yourBalance = (group?.expenses || []).reduce((balance, expense) => {
+    const amount = Number(expense.amount || 0);
+
+    const yourShare =
+      expense.expense_participants?.find((participant) => String(participant.user_id) === String(user?.id))?.share || 0;
+
+    let result = balance;
+
+    if (String(expense.paid_by) === String(user?.id)) {
+      result += amount;
+      result -= Number(yourShare);
+    } else {
+      result -= Number(yourShare);
+    }
+
+    return result;
+  }, 0);
+
   // =========================================
   // DELETE GROUP
   // =========================================
@@ -301,7 +319,9 @@ export default function GroupDetails() {
         <div className="balance-box">
           <span>Your balance</span>
 
-          <strong>+ ₹0</strong>
+          <strong className={yourBalance >= 0 ? "balance-positive" : "balance-negative"}>
+            {yourBalance >= 0 ? "+" : "-"} {formatCurrency(Math.abs(yourBalance))}
+          </strong>
         </div>
 
         <div className="balance-box">
@@ -395,9 +415,7 @@ export default function GroupDetails() {
               onClick={() => {
                 setShowSettings(false);
 
-                navigate(
-                  `/app/groups/${group.id}/edit`
-                );
+                navigate(`/app/groups/${group.id}/edit`);
               }}
             >
               <Settings2 size={18} />

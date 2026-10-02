@@ -1,1 +1,15 @@
-import RecentActivity from '../components/dashboard/RecentActivity'; export default function Activity(){return <div><div className="page-heading"><div><span className="eyebrow">Activity</span><h1>Recent activity</h1><p>See what changed across your groups.</p></div></div><RecentActivity/></div>}
+import RecentActivity from "../components/dashboard/RecentActivity";
+export default function Activity() {
+  return (
+    <div>
+      <div className="page-heading">
+        <div>
+          <span className="eyebrow">Activity</span>
+          <h1>Your Activity</h1>
+          <p>See what changed across your groups.</p>
+        </div>
+      </div>
+      <RecentActivity showHeader={false} />
+    </div>
+  );
+}

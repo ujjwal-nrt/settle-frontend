@@ -14,3 +14,25 @@ export const getGroupExpenses = (groupId) => {
 export const getExpense = (expenseId) => {
   return apiRequest(`/expenses/${expenseId}`);
 };
+
+export const updateExpense = (expenseId, expenseData) => {
+  return apiRequest(`/expenses/${expenseId}`, {
+    method: "PUT",
+    body: JSON.stringify(expenseData),
+  });
+};
+
+// =========================================
+// DELETE EXPENSE
+// =========================================
+
+export const deleteExpense = (expenseId) => {
+  return apiRequest(`/expenses/${expenseId}`, {
+    method: "DELETE",
+  });
+};
+
+
+export const getMyBalance = () => {
+  return apiRequest("/expenses/balance/me");
+};

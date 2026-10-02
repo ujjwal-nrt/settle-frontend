@@ -1,8 +1,9 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Search, SlidersHorizontal } from "lucide-react";
 
 import useGroup from "../hooks/useGroup";
 import Button from "../components/common/Button";
+import { useMemo, useState } from "react";
 
 export default function GroupExpenses() {
   const { groupId } = useParams();
@@ -11,6 +12,60 @@ export default function GroupExpenses() {
 
   const group = data?.group;
   const navigate = useNavigate();
+
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("latest");
+
+  const expenses = group?.expenses || [];
+
+  const filteredExpenses = useMemo(() => {
+    let result = [...expenses];
+
+    // -----------------------------
+    // CATEGORY
+    // -----------------------------
+
+    if (categoryFilter !== "All") {
+      result = result.filter((expense) => expense.category === categoryFilter);
+    }
+
+    // -----------------------------
+    // SEARCH
+    // -----------------------------
+
+    const searchValue = search.trim().toLowerCase();
+
+    if (searchValue) {
+      result = result.filter((expense) =>
+        [expense.title, expense.category]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(searchValue)),
+      );
+    }
+
+    // -----------------------------
+    // SORT
+    // -----------------------------
+
+    if (sortBy === "latest") {
+      result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    if (sortBy === "oldest") {
+      result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    }
+
+    if (sortBy === "highest") {
+      result.sort((a, b) => Number(b.amount || 0) - Number(a.amount || 0));
+    }
+
+    if (sortBy === "lowest") {
+      result.sort((a, b) => Number(a.amount || 0) - Number(b.amount || 0));
+    }
+
+    return result;
+  }, [expenses, categoryFilter, search, sortBy]);
 
   // ==============================
   // LOADING
@@ -50,8 +105,6 @@ export default function GroupExpenses() {
       </div>
     );
   }
-
-  const expenses = group.expenses || [];
 
   const formatCurrency = (amount) => {
     return `₹${Number(amount || 0).toLocaleString("en-IN")}`;
@@ -116,24 +169,67 @@ export default function GroupExpenses() {
           </Link>
         </div>
 
-        {expenses.length === 0 ? (
+        <div className="expense-filter-bar">
+          <div className="expense-search">
+            <Search size={17} />
+
+            <input
+              type="text"
+              placeholder="Search expenses..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="expense-filter-row">
+            <div className="category-filters">
+              {["All", "Food", "Transport", "Hotel", "Other"].map((category) => (
+                <button
+                  key={category}
+                  type="button"
+                  className={categoryFilter === category ? "active" : ""}
+                  onClick={() => setCategoryFilter(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+
+            <div className="expense-sort">
+              <SlidersHorizontal size={16} />
+
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                <option value="latest">Latest</option>
+
+                <option value="oldest">Oldest</option>
+
+                <option value="highest">Highest amount</option>
+
+                <option value="lowest">Lowest amount</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {filteredExpenses.length === 0 ? (
           <div className="empty-state">
             <p>No expenses yet.</p>
 
             <Button onClick={() => navigate(`/app/groups/${group.id}/expense/add`)}>Add your first expense</Button>
           </div>
         ) : (
-          expenses.map((expense) => (
+          // expenses.map((expense) => (
+          filteredExpenses.map((expense) => (
             <Link key={expense.id} to={`/app/groups/${group.id}/expense/${expense.id}`} className="expense-row">
               <div className="expense-row-left">
                 <div className="expense-icon">
                   {expense.category === "Hotel"
                     ? "🏨"
                     : expense.category === "Food"
-                      ? "🍴"
-                      : expense.category === "Transport"
-                        ? "🚕"
-                        : "₹"}
+                    ? "🍴"
+                    : expense.category === "Transport"
+                    ? "🚕"
+                    : "₹"}
                 </div>
 
                 <div>

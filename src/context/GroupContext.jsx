@@ -3,12 +3,14 @@ import { createContext, useContext } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getGroups, createGroup } from "../api/groupApi";
+
 import { useAuth } from "../hooks/useAuth";
 
 const GroupContext = createContext(null);
 
 export function GroupProvider({ children }) {
   const queryClient = useQueryClient();
+
   const { isAuthenticated } = useAuth();
 
   // =========================================
@@ -18,14 +20,22 @@ export function GroupProvider({ children }) {
   const {
     data: groupsData,
     isLoading: groupsLoading,
+    isFetching: groupsFetching,
     error: groupsError,
   } = useQuery({
     queryKey: ["groups"],
     queryFn: getGroups,
     enabled: isAuthenticated,
+
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  const groups = groupsData?.groups || []; 
+  const groups = groupsData?.groups || [];
+
   // =========================================
   // CREATE GROUP
   // =========================================
@@ -54,11 +64,13 @@ export function GroupProvider({ children }) {
         groups,
 
         groupsLoading,
+        groupsFetching,
         groupsError,
 
         addGroup,
 
         createGroupLoading: createGroupMutation.isPending,
+
         createGroupError: createGroupMutation.error,
       }}
     >

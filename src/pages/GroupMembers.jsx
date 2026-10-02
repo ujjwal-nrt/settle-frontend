@@ -108,7 +108,13 @@ export default function GroupMembers() {
       });
 
       if (result?.type === "member") {
-        showToast("Member added successfully");
+        if (result?.alreadyMember) {
+          showToast(`${result.member?.name || "This person"} is already a member of this group.`, "error");
+        } else if (result?.reactivated) {
+          showToast(`${result.member?.name || "Member"} added back to the group.`);
+        } else {
+          showToast(`${result.member?.name || "Member"} added successfully.`);
+        }
       } else if (result?.type === "invitation") {
         showToast("Invitation created successfully");
       }
@@ -142,7 +148,13 @@ export default function GroupMembers() {
         const result = await handleContact(contact);
 
         if (result?.type === "member") {
-          showToast("Member added successfully");
+          if (result?.alreadyMember) {
+            showToast(`${result.member?.name || "This person"} is already a member of this group.`, "error");
+          } else if (result?.reactivated) {
+            showToast(`${result.member?.name || "Member"} added back to the group.`);
+          } else {
+            showToast(`${result.member?.name || "Member"} added successfully.`);
+          }
         } else if (result?.type === "invitation") {
           showToast("Invitation created successfully");
         }
@@ -170,12 +182,25 @@ export default function GroupMembers() {
         phone: contact.phone,
       });
 
-      console.log("ADD GROUP PERSON RESPONSE:", result);
 
       // REGISTERED USER
 
       if (result?.type === "member") {
-        console.log("Registered member:", result.member);
+
+        // Already an active member
+        if (result?.alreadyMember) {
+          showToast("error", `${contact.name || "This person"} is already a member of this group.`);
+
+          return result;
+        }
+
+        // Member was previously removed/left and is now active again
+        if (result?.reactivated) {
+          showToast("success", `${contact.name || "Member"} added back to the group.`);
+        } else {
+          // Completely new member
+          showToast("success", `${contact.name || "Member"} added successfully.`);
+        }
 
         await queryClient.invalidateQueries({
           queryKey: ["group", groupId],
@@ -212,8 +237,7 @@ export default function GroupMembers() {
         await queryClient.invalidateQueries({
           queryKey: ["group", groupId],
         });
-
-        console.log("INVITATION ADDED:", invitation);
+ 
         return result;
       }
     } catch (error) {
