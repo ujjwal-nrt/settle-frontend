@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+
 import { useAuth } from "../hooks/useAuth";
 import { useGroups } from "../context/GroupContext";
 
@@ -6,12 +8,22 @@ import ExpenseActions from "../components/dashboard/ExpenseActions";
 import RecentGroups from "../components/dashboard/RecentGroups";
 import RecentActivity from "../components/dashboard/RecentActivity";
 import DashboardSkeleton from "../components/dashboard/DashboardSkeleton";
+import { getMyBalance } from "../api/expenseApi";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
-  const { groups, loading: groupsLoading } = useGroups();
+  const { groupsLoading } = useGroups();
 
-  const isLoading = authLoading || groupsLoading;
+  const { isLoading: balanceLoading } = useQuery({
+    queryKey: ["myBalance"],
+    queryFn: getMyBalance,
+    enabled: Boolean(user?.id),
+    staleTime: 2 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const isLoading = authLoading || groupsLoading || balanceLoading;
 
   if (isLoading) {
     return <DashboardSkeleton />;
@@ -35,7 +47,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* <BalanceCard groups={groups || []} currentUserId={user?.id} /> */}
       <BalanceCard />
 
       <ExpenseActions />

@@ -29,7 +29,7 @@
     align-items: flex-start;
     flex-direction: column;
   }
- 
+
   .balance-card {
     flex-direction: column;
   }
@@ -55,7 +55,7 @@
     height: 65px;
     background: rgba(255, 255, 255, 0.96);
     border-top: 1px solid var(--border);
-    z-index: 20;
+    z-index: 999;
     justify-content: space-around;
     padding: 7px 8px;
   }
@@ -244,7 +244,7 @@
   }
 
   .sidebar.open {
-    transform: translateX(0);
+    transform: translateX(0); z-index: 1001;
   }
 
 
@@ -295,7 +295,7 @@
   .sidebar-overlay.show {
     opacity: 1;
 
-    visibility: visible;
+    visibility: visible; z-index: 1001;
   }
 
 }
