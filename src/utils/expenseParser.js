@@ -31,7 +31,7 @@ export function parseExpenseText(text, members = [], currentUserId = "") {
 
   if (payer) {
     result.paidBy = payer.id;
-  } else if (/\b(i|me|my|myself|maine|main|मैंने|मैं)\b/i.test(normalizedText)) {
+  } else if (/\b(i|me|my|myself|maine|main|मैंने|मैं|मैनें)\b/i.test(normalizedText)) {
     result.paidBy = currentUserId;
   }
 
@@ -51,26 +51,71 @@ export function parseExpenseText(text, members = [], currentUserId = "") {
 function extractAmount(text) {
   const patterns = [
     // ₹5,000
-    /₹\s*([\d,]+(?:\.\d+)?)/i,
+    {
+      regex: /₹\s*([\d,]+(?:\.\d+)?)/i,
+      multiplier: 1,
+    },
 
     // Rs 5000
-    /rs\.?\s*([\d,]+(?:\.\d+)?)/i,
+    {
+      regex: /rs\.?\s*([\d,]+(?:\.\d+)?)/i,
+      multiplier: 1,
+    },
 
     // INR 5000
-    /inr\s*([\d,]+(?:\.\d+)?)/i,
+    {
+      regex: /inr\s*([\d,]+(?:\.\d+)?)/i,
+      multiplier: 1,
+    },
 
     // 5000 rupees
-    /([\d,]+(?:\.\d+)?)\s*(?:rupees|rs)/i,
+    {
+      regex: /([\d,]+(?:\.\d+)?)\s*(?:rupees|rupee|rs)/i,
+      multiplier: 1,
+    },
+
+    // 5000 rupya / rupaye
+    {
+      regex: /([\d,]+(?:\.\d+)?)\s*(?:rupya|rupaye|rupai|rupay)/i,
+      multiplier: 1,
+    },
+
+    // 5000 रुपया / रुपये / रुपए
+    {
+      regex: /([\d,]+(?:\.\d+)?)\s*(?:रुपया|रुपये|रुपए|रुपए)/i,
+      multiplier: 1,
+    },
+
+    // 2k
+    {
+      regex: /([\d,.]+)\s*k\b/i,
+      multiplier: 1000,
+    },
+
+    // 2 thousand
+    {
+      regex: /([\d,.]+)\s*thousand\b/i,
+      multiplier: 1000,
+    },
+
+    // 2 lakh
+    {
+      regex: /([\d,.]+)\s*lakh\b/i,
+      multiplier: 100000,
+    },
 
     // plain number
-    /\b([\d,]+(?:\.\d+)?)\b/i,
+    {
+      regex: /\b([\d,]+(?:\.\d+)?)\b/i,
+      multiplier: 1,
+    },
   ];
 
-  for (const pattern of patterns) {
-    const match = text.match(pattern);
+  for (const { regex, multiplier } of patterns) {
+    const match = text.match(regex);
 
     if (match?.[1]) {
-      const value = Number(match[1].replace(/,/g, ""));
+      const value = Number(match[1].replace(/,/g, "")) * multiplier;
 
       if (Number.isFinite(value) && value > 0) {
         return value;
@@ -126,9 +171,35 @@ function detectCategory(text) {
       "bbq",
       "snacks",
       "snack",
+
+      // Hindi / Hinglish
+      "khana",
+      "khane",
+      "khaana",
+      "nashta",
+      "nasta",
+      "chai",
+      "चाय",
+      "खाना",
+      "खाने",
+      "नाश्ता",
     ],
 
-    Hotel: ["hotel", "room", "stay", "resort", "hostel", "airbnb", "lodging"],
+    Hotel: [
+      "hotel",
+      "room",
+      "stay",
+      "resort",
+      "hostel",
+      "airbnb",
+      "lodging",
+
+      // Hindi / Hinglish
+      "kamra",
+      "kamre",
+      "कमरा",
+      "कमरे",
+    ],
 
     Transport: [
       "cab",
@@ -144,9 +215,39 @@ function detectCategory(text) {
       "petrol",
       "fuel",
       "parking",
+
+      // Hindi / Hinglish
+      "gadi",
+      "gaadi",
+      "ricksha",
+      "safar",
+      "गाड़ी",
+      "सफर",
     ],
 
-    Shopping: ["shopping", "clothes", "shirt", "shoes", "mall", "amazon", "flipkart", "purchase", "bought"],
+    Shopping: [
+      "shopping",
+      "clothes",
+      "shirt",
+      "shoes",
+      "mall",
+      "amazon",
+      "flipkart",
+      "purchase",
+      "bought",
+
+      // Hindi / Hinglish
+      "kapde",
+      "kapda",
+      "khareeda",
+      "kharida",
+      "shopping",
+      "कपड़े",
+      "कपड़ा",
+      "खरीदा",
+      "खरीदा",
+      "खरीदारी",
+    ],
   };
 
   for (const [category, keywords] of Object.entries(categories)) {

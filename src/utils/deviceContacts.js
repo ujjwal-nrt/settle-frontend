@@ -12,15 +12,15 @@ export async function pickContacts() {
       throw new Error("Native ContactPicker plugin is not registered.");
     }
 
-    console.log("Calling native ContactPicker.pickContacts()...");
+    // console.log("Calling native ContactPicker.pickContacts()...");
 
     const result = await ContactPicker.pickContacts();
 
-    console.log("Native picker result:", result);
+    // console.log("Native picker result:", result);
 
-    console.log("Native picker result JSON:", JSON.stringify(result, null, 2));
+    // console.log("Native picker result JSON:", JSON.stringify(result, null, 2));
 
-    console.log("Contacts JSON:", JSON.stringify(result?.contacts || [], null, 2));
+    // console.log("Contacts JSON:", JSON.stringify(result?.contacts || [], null, 2));
 
     return result?.contacts || [];
   } catch (error) {
