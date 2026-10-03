@@ -54,10 +54,10 @@ PostgreSQL
 ## Screenshots
 
 <p align="center">
-  <img src="public/images/screenshots/settle_g1.jpeg" height="500" alt="SettleG Dashboard">
-  <img src="public/images/screenshots/settle_g4.jpeg" height="500" alt="SettleG Groups">
-  <img src="public/images/screenshots/settle_g5.jpeg" height="500" alt="SettleG Expense"> 
-  <img src="public/images/screenshots/settle_g6.jpeg" height="500" alt="SettleG Groups"> 
+  <img src="github-assets/screenshots/settle_g1.jpeg" height="500" alt="SettleG Dashboard">
+  <img src="github-assets/screenshots/settle_g4.jpeg" height="500" alt="SettleG Groups">
+  <img src="github-assets/screenshots/settle_g5.jpeg" height="500" alt="SettleG Expense">
+  <img src="github-assets/screenshots/settle_g6.jpeg" height="500" alt="SettleG Groups">
 </p>
 
 
