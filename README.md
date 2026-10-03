@@ -1,16 +1,58 @@
-# React + Vite
+# SettleG
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern group expense-splitting app for managing shared expenses, balances, and settlements with friends, family, or groups.
 
-Currently, two official plugins are available:
+## Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+https://settle-frontend-iota.vercel.app
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-  Create and manage expense groups
+-  Add, edit, and delete expenses
+-  Equal, exact amount, percentage & share-based splitting
+-  Smart expense entry using natural text
+-  Track balances and settlements
+-  Invite members by phone number
+-  Group activity tracking
+-  Responsive web & Android app
+-  Toast notifications and loading states
 
-## Expanding the ESLint configuration
+##  Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- Vite
+- React Router
+- TanStack React Query
+- JavaScript / JSX
+- CSS
+- Lucide React
+- Capacitor
+- Node.js / Express
+- Supabase / PostgreSQL
+
+## Architecture
+
+
+React / Capacitor
+       ↓
+Node.js / Express
+       ↓
+Supabase
+       ↓
+PostgreSQL
+
+## Expense Splitting
+
+SettleG supports:
+
+- **Equal:** Split equally between members
+- **Exact:** Assign specific amounts
+- **Percentage:** Split by percentage
+- **Shares:** Split using share units
+
+## Author
+
+**Ujjwal**
+
+Built with ❤️ using React, Node.js, Supabase & Capacitor.
