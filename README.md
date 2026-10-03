@@ -43,7 +43,7 @@ Supabase
 PostgreSQL
 
 
-![SettleG Dashboard](images/screenshots/landing.jpeg)
+[![SettleG Dashboard](images/screenshots/landing.jpeg)](https://github.com/ujjwal-nrt/settle-frontend/blob/main/public/images/screenshots/landing.jpeg)
 
 ## Expense Splitting
 
