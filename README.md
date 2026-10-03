@@ -19,7 +19,7 @@ Instead of manually calculating who owes whom, users can simply add an expense, 
 - Create and manage expense groups
 - Add, edit, and delete expenses
 - Equal, exact amount, percentage & share-based splitting
-- Smart expense entry using natural text
+- Smart expense entry using voice and natural text
 - Track balances and settlements
 - Invite members by phone number
 - Group activity tracking
