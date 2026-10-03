@@ -42,6 +42,9 @@ Supabase
        ↓
 PostgreSQL
 
+
+![SettleG Dashboard](images/screenshots/landing.jpeg)
+
 ## Expense Splitting
 
 SettleG supports:
